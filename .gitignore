@@ -1,6 +1,6 @@
 ### Custom ignores
 
-main.cpp
+main.c
 *.txt
 
 ### Example user template template
