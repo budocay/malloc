@@ -5,7 +5,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include <assert.h>
 #include <string.h>
 #include "malloc_tp.h"
 
@@ -103,7 +102,8 @@ void    *realloc(void *ptr,size_t size)
         return NULL;
     }
     memcpy(new_alloc_ptr, ptr, block_ptr->size);
-    free(ptr);
+    if (ptr != NULL)
+        free(ptr);
     return new_alloc_ptr;
 }
 
@@ -113,6 +113,7 @@ void  free(void *ptr)
 
     if (valid_addr(ptr))
     {
+
         b = get_block_ptr(ptr);
         b->free = 1;
         if (b->prev && b->prev->free)
@@ -125,7 +126,6 @@ void  free(void *ptr)
                 b->prev->next = NULL;
             else
                 global_base = NULL;
-
         }
     }
 }
@@ -167,4 +167,16 @@ void    splitblock(t_block *bl, size_t size)
     bl->next = new;
     if (new->next)
         new->next->prev = new;
+}
+
+void    *calloc(size_t size1, size_t size2)
+{
+    size_t size;
+    void    *ptr;
+
+    size = size1 * size2;
+    ptr = malloc(size);
+    memset(ptr, 0, size);
+    printf("L'adresse alloué par calloc est %p de taille %lu\n", ptr, size);
+    return ptr;
 }
