@@ -21,9 +21,7 @@ void*           _sbrk(size_t size)
     size_t      padding;
     size_t      nb_pages;
 
-    fprintf(stderr, "_sbrk\n");
     if ((heap = sbrk(0)) == SBRK_ERROR) {
-        fprintf(stderr, "sbrk failed\n");
         return (NULL);
     }
     heap -= mem_left;
@@ -37,13 +35,10 @@ void*           _sbrk(size_t size)
         return (new_block(heap, size));
     }
     nb_pages = (to_allocate / PAGE_SIZE) + 1;
-    fprintf(stderr, "%ld\n%ld", (size_t)heap, to_allocate);
     if (sbrk(nb_pages * PAGE_SIZE) == SBRK_ERROR) {
-        fprintf(stderr, "sbrk failed\n");
         return (NULL);
     }
     mem_left += (nb_pages * PAGE_SIZE) - to_allocate;
-    fprintf(stderr, "%ld octets\n", mem_left);
     return (new_block(heap, size));
 }
 

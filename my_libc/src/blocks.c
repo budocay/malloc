@@ -8,7 +8,16 @@
 ** Last update on 28/01/16 21:31
 */
 
+#include <stdio.h>
 #include "my_malloc.h"
+
+void            dump_header(t_block *block)
+{
+    if (block == NULL)
+        return;
+    fprintf(stderr, "====\nMagic Number = %ld\nSize = %ld\nnext = %p\nprev = %p\n=====\n", block->magic_number,
+            block->size, block->next, block->prev);
+}
 
 static t_block* freed = NULL;
 
@@ -73,12 +82,13 @@ void            remove_block(void *mem)
 {
     t_block*    block;
 
-    if ((block = cast_mem(mem)) == NULL)
+    if ((block = mem) == NULL)
         return;
     if (block == freed)
     {
-        if (freed->prev == freed && freed->next == freed)
+        if (freed->prev == freed && freed->next == freed) {
             freed = NULL;
+        }
         else
         {
             freed->prev->next = freed->next;
@@ -106,13 +116,17 @@ t_block*        get_block(size_t size)
     {
         if (csr->size >= size)
         {
-            remove_block(ptr = csr + sizeof(t_block));
+            remove_block(csr);
+            ptr = csr;
+            ptr += sizeof(t_block);
             return (ptr);
         }
     }
     if (csr->size >= size)
     {
-        remove_block(ptr = csr + sizeof(t_block));
+        remove_block(csr);
+        ptr = csr;
+        ptr += sizeof(t_block);
         return (ptr);
     }
     return (NULL);
