@@ -42,7 +42,6 @@ t_block  *need_space(t_block *last, size_t size)
     block->size = size;
     block->next = NULL;
     block->prev = last;
-    block->ptr  = block->data;
     if(last)
         last->next = block;
     block->free = 0;
@@ -94,7 +93,8 @@ void    *realloc(void *ptr,size_t size)
     block_ptr = get_block_ptr(ptr);
     if(block_ptr->size >= size)
         return ptr;
-    new_alloc_ptr = malloc(size);
+    if ((new_alloc_ptr = malloc(size)) == NULL)
+        return NULL;
     printf("la mémoire réalloué est : %p sa taille est %lu bytes\n", new_alloc_ptr, size);
     if(!new_alloc_ptr)
     {
@@ -147,7 +147,7 @@ int     valid_addr(void *p)
     {
         if (p > global_base && p < sbrk(0))
         {
-            return (p == (get_block_ptr(p))->ptr);
+            return (p == (get_block_ptr(p)));
         }
     }
     return 0;
@@ -157,12 +157,11 @@ void    splitblock(t_block *bl, size_t size)
 {
     t_block *new;
 
-    new = (t_block *) (bl->data + size);
+    new = bl;
     new->size = bl->size - size - SIZE_ALLOC;
     new->next = bl->next;
     new->prev = bl;
     new->free = 1;
-    new->ptr = new->data;
     new->size = size;
     bl->next = new;
     if (new->next)
