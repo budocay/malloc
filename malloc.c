@@ -36,6 +36,7 @@ t_block  *need_space(t_block *last, size_t size)
 
     block = sbrk(0);
     request = sbrk(size + SIZE_ALLOC);
+    printf("La mémoire alloué est : %p sa taille est : %lu\n", request, size);
     assert((void*)block == request);
     if (request ==  (void*) -1)
         return NULL;
@@ -49,7 +50,7 @@ t_block  *need_space(t_block *last, size_t size)
 
 void    *malloc(size_t t)
 {
-    t_block *bl = NULL;
+    t_block *bl;
     t_block *last;
 
     if (t <= 0)
@@ -72,11 +73,9 @@ void    *malloc(size_t t)
                 return NULL;
         }
         else
-        {
             bl->free = 0;
-        }
     }
-    return bl+1;
+    return bl->data;
 }
 
 void    *realloc(void *ptr,size_t size)
@@ -88,10 +87,9 @@ void    *realloc(void *ptr,size_t size)
         return malloc(size);
     block_ptr = get_block_ptr(ptr);
     if(block_ptr->size >= size)
-    {
         return ptr;
-    }
     new_alloc_ptr = malloc(size);
+    printf("la mémoire réalloué est : %p sa taille est %lu\n", new_alloc_ptr, size);
     if(!new_alloc_ptr)
     {
         dprintf(2, "%m\n");
@@ -105,6 +103,7 @@ void    *realloc(void *ptr,size_t size)
 void  free(void *ptr)
 {
     t_block *b;
+
     if (valid_addr(ptr))
     {
         b = get_block_ptr(ptr);
@@ -122,19 +121,11 @@ void  free(void *ptr)
             brk(b);
         }
     }
-
-    /*t_block *blk_ptr;
-    if (!ptr)
-        return;
-    blk_ptr = get_block_ptr(ptr);
-    assert(blk_ptr->free == 0);
-    blk_ptr->free = 1;*/
 }
 
 t_block *fusion_block(t_block *b)
 {
-    if (b->next && b->next->free)
-    {
+    if (b->next && b->next->free) {
         b->size += SIZE_ALLOC + b->next->size;
         b->next = b->next->next;
         if (b->next)
