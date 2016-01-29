@@ -5,7 +5,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include <assert.h>
 #include <string.h>
 #include "malloc_tp.h"
 
@@ -43,7 +42,6 @@ t_block  *need_space(t_block *last, size_t size)
     block->size = size;
     block->next = NULL;
     block->prev = last;
-    block->ptr  = block->data;
     if(last)
         last->next = block;
     block->free = 0;
@@ -95,7 +93,8 @@ void    *realloc(void *ptr,size_t size)
     block_ptr = get_block_ptr(ptr);
     if(block_ptr->size >= size)
         return ptr;
-    new_alloc_ptr = malloc(size);
+    if ((new_alloc_ptr = malloc(size)) == NULL)
+        return NULL;
     printf("la mémoire réalloué est : %p sa taille est %lu bytes\n", new_alloc_ptr, size);
     if(!new_alloc_ptr)
     {
@@ -103,7 +102,8 @@ void    *realloc(void *ptr,size_t size)
         return NULL;
     }
     memcpy(new_alloc_ptr, ptr, block_ptr->size);
-    free(ptr);
+    if (ptr != NULL)
+        free(ptr);
     return new_alloc_ptr;
 }
 
@@ -113,6 +113,7 @@ void  free(void *ptr)
 
     if (valid_addr(ptr))
     {
+
         b = get_block_ptr(ptr);
         b->free = 1;
         if (b->prev && b->prev->free)
@@ -125,7 +126,6 @@ void  free(void *ptr)
                 b->prev->next = NULL;
             else
                 global_base = NULL;
-
         }
     }
 }
@@ -147,7 +147,7 @@ int     valid_addr(void *p)
     {
         if (p > global_base && p < sbrk(0))
         {
-            return (p == (get_block_ptr(p))->ptr);
+            return (p == (get_block_ptr(p)));
         }
     }
     return 0;
@@ -157,14 +157,25 @@ void    splitblock(t_block *bl, size_t size)
 {
     t_block *new;
 
-    new = (t_block *) (bl->data + size);
+    new = bl;
     new->size = bl->size - size - SIZE_ALLOC;
     new->next = bl->next;
     new->prev = bl;
     new->free = 1;
-    new->ptr = new->data;
     new->size = size;
     bl->next = new;
     if (new->next)
         new->next->prev = new;
+}
+
+void    *calloc(size_t size1, size_t size2)
+{
+    size_t size;
+    void    *ptr;
+
+    size = size1 * size2;
+    ptr = malloc(size);
+    memset(ptr, 0, size);
+    printf("L'adresse alloué par calloc est %p de taille %lu\n", ptr, size);
+    return ptr;
 }
