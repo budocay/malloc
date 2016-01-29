@@ -9,13 +9,11 @@
 #include <string.h>
 #include "malloc_tp.h"
 
-void *global_base = NULL;
+static void *global_base = NULL;
 
 t_block *get_block_ptr(void *ptr)
 {
-    char *tmp;
-    tmp = ptr;
-    return (ptr = tmp -= SIZE_ALLOC);
+    return (t_block*)ptr -1;
 }
 
 t_block *find_free_node(t_block **last, size_t sze)
@@ -36,12 +34,16 @@ t_block  *need_space(t_block *last, size_t size)
 
     block = sbrk(0);
     request = sbrk(size + SIZE_ALLOC);
-    printf("La mémoire alloué est : %p sa taille est : %lu\n", request, size);
-    assert((void*)block == request);
-    if (request ==  (void*) -1)
+    if (request == (void*)-1)
+    {
+        dprintf(2, "%m\n");
         return NULL;
+    }
+    printf("La mémoire alloué est : %p sa taille est : %lu bytes\n", request, size);
     block->size = size;
     block->next = NULL;
+    block->prev = last;
+    block->ptr  = block->data;
     if(last)
         last->next = block;
     block->free = 0;
@@ -52,12 +54,14 @@ void    *malloc(size_t t)
 {
     t_block *bl;
     t_block *last;
+    size_t size;
 
     if (t <= 0)
         return NULL;
-    if (!global_base)
+    size = align4(t);
+    if (global_base)
     {
-        bl = need_space(NULL, t);
+        bl = need_space(NULL, size);
         if (!bl)
             return NULL;
         global_base = bl;
@@ -65,17 +69,20 @@ void    *malloc(size_t t)
     else
     {
         last = global_base;
-        bl = find_free_node(&last, t);
+        bl = find_free_node(&last, size);
         if (!bl)
         {
-            bl = need_space(last, t);
+            bl = need_space(last, size);
             if (!bl)
                 return NULL;
         }
         else
+        {
+            splitblock(bl, size);
             bl->free = 0;
+        }
     }
-    return bl->data;
+    return (bl+1);
 }
 
 void    *realloc(void *ptr,size_t size)
@@ -89,7 +96,7 @@ void    *realloc(void *ptr,size_t size)
     if(block_ptr->size >= size)
         return ptr;
     new_alloc_ptr = malloc(size);
-    printf("la mémoire réalloué est : %p sa taille est %lu\n", new_alloc_ptr, size);
+    printf("la mémoire réalloué est : %p sa taille est %lu bytes\n", new_alloc_ptr, size);
     if(!new_alloc_ptr)
     {
         dprintf(2, "%m\n");
@@ -118,7 +125,7 @@ void  free(void *ptr)
                 b->prev->next = NULL;
             else
                 global_base = NULL;
-            brk(b);
+
         }
     }
 }
@@ -136,7 +143,7 @@ t_block *fusion_block(t_block *b)
 
 int     valid_addr(void *p)
 {
-    if (global_base)
+    if (global_base != NULL)
     {
         if (p > global_base && p < sbrk(0))
         {
@@ -144,4 +151,20 @@ int     valid_addr(void *p)
         }
     }
     return 0;
+}
+
+void    splitblock(t_block *bl, size_t size)
+{
+    t_block *new;
+
+    new = (t_block *) (bl->data + size);
+    new->size = bl->size - size - SIZE_ALLOC;
+    new->next = bl->next;
+    new->prev = bl;
+    new->free = 1;
+    new->ptr = new->data;
+    new->size = size;
+    bl->next = new;
+    if (new->next)
+        new->next->prev = new;
 }
