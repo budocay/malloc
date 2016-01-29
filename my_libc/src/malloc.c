@@ -35,12 +35,12 @@ void*           _sbrk(size_t size)
     size_t      padding;
     size_t      nb_pages;
 
-    fprintf(stderr, "_sbrk\n");
+    fprintf(stdout, "_sbrk\n");
     if ((heap = sbrk(0)) == SBRK_ERROR) {
         return (NULL);
     }
     heap_start = (heap_start == NULL) ? heap : heap_start;
-    fprintf(stderr, "heap size is : %ld Bytes\n", (size_t)heap - (size_t)heap_start);
+    fprintf(stdout, "heap size is : %ld Bytes\n", (size_t)heap - (size_t)heap_start);
     heap -= mem_left;
     padding = sizeof(size_t) - ((size_t)heap % sizeof(size_t));
     size += (sizeof(size_t) - (size % sizeof(size_t)));
@@ -63,7 +63,7 @@ void*           malloc(size_t size)
 {
     void*       block;
 
-    fprintf(stderr, "my_malloc\n");
+    fprintf(stdout, "my_malloc\n");
     if ((block = get_block(size)) != NULL)
         return (block);
     return (_sbrk(size));

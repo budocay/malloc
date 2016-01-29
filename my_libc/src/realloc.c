@@ -18,7 +18,7 @@
     uint8_t*    data_block;
     uint8_t*    data_dest;
 
-    fprintf(stderr, "realloc_in_block\n");
+    fprintf(stdout, "realloc_in_block\n");
     if (block == NULL || dest == NULL)
         return (NULL);
     data_block = (uint8_t *)block + sizeof(t_block);
@@ -33,7 +33,7 @@ void*           realloc_in_new_block(t_block* block, size_t size)
     void*       dest;
     uint8_t*    data;
 
-    fprintf(stderr, "realloc_in_new_block\n");
+    fprintf(stdout, "realloc_in_new_block\n");
     if (block == NULL || (dest = malloc(size)) == NULL)
         return (NULL);
     data = (uint8_t *)block + sizeof(t_block);
@@ -47,13 +47,13 @@ void*           realloc(void *ptr, size_t size)
     void*       dest;
     t_block*    block;
 
-    fprintf(stderr, "realloc\n");
+    fprintf(stdout, "realloc\n");
     if (ptr != NULL && size == 0)
         free(ptr);
     else if (ptr == NULL)
         return (malloc(size));
     if ((block = cast_mem(ptr)) == NULL) {
-        /* fprintf(stderr, "cast failed in realloc\n"); */
+        /* fprintf(stdout, "cast failed in realloc\n"); */
         return (NULL);
     }
     if (size <= block->size)

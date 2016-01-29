@@ -13,6 +13,6 @@
 
 void    free(void *ptr)
 {
-    fprintf(stderr, "free\n");
+    fprintf(stdout, "free\n");
     add_block(ptr);
 }
