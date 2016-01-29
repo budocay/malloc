@@ -12,7 +12,7 @@ typedef struct      s_block
     struct s_block* prev;
 }                   t_block;
 
-# define PAGE_SIZE 16384
+# define PAGE_SIZE 4096
 /* Taille d'une page mémoire */
 
 # define SBRK_ERROR (void *)-1

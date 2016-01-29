@@ -8,9 +8,11 @@
 ** Last update on 25/01/16 22:38
 */
 
+#include <stdio.h>
 #include "my_malloc.h"
 
 void    free(void *ptr)
 {
+    fprintf(stderr, "free\n");
     add_block(ptr);
 }

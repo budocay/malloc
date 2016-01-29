@@ -33,6 +33,7 @@ void*           new_block(void *mem, size_t size)
 {
     t_block*    block;
 
+    fprintf(stderr, "new_block\n");
     if ((block = mem) == NULL || (size_t)mem <= sizeof(t_block))
         return (NULL);
     block->magic_number = MAGIC_NUMBER;
@@ -48,18 +49,24 @@ void            add_block(void *mem)
     t_block*    csr;
     void*       ptr;
 
+    fprintf(stderr, "add_block\n");
     if ((block = cast_mem(mem)) == NULL)
         return;
     if ((csr = freed) == NULL)
     {
-        block->next = block;
-        block->prev = block;
+        block->next = NULL;
+        block->prev = NULL;
         freed = block;
         return;
     }
-    while (csr->next != freed)
+    while (csr->next != NULL)
     {
-        if ((ptr = csr + sizeof(t_block) + csr->size) == block)
+        ptr = csr;
+        ptr += sizeof(t_block);
+        ptr += csr->size;
+        if (csr == block || csr->next == block)
+            return;
+        if (ptr == block)
         {
             csr->size += block->size;
             return;
@@ -71,35 +78,34 @@ void            add_block(void *mem)
             csr->prev = block;
             return;
         }
+        csr = csr->next;
     }
-    block->next = freed;
-    block->prev = freed->prev;
-    freed->prev->next = block;
-    freed->prev = block;
+    block->next = NULL;
+    block->prev = csr;
+    csr->next = block;
 }
 
 void            remove_block(void *mem)
 {
     t_block*    block;
 
+    fprintf(stderr, "remove_block\n");
     if ((block = mem) == NULL)
         return;
     if (block == freed)
     {
-        if (freed->prev == freed && freed->next == freed) {
+        if (freed->prev == NULL && freed->next == NULL) {
             freed = NULL;
         }
         else
-        {
-            freed->prev->next = freed->next;
-            freed->next->prev = freed->prev;
             freed = freed->next;
-        }
     }
     else
     {
-        block->prev->next = block->next;
-        block->next->prev = block->prev;
+        if (block->prev != NULL)
+            block->prev->next = block->next;
+        if (block->next != NULL)
+            block->next->prev = block->prev;
     }
     block->next = NULL;
     block->prev = NULL;
@@ -110,10 +116,12 @@ t_block*        get_block(size_t size)
     t_block*    csr;
     void*       ptr;
 
+    fprintf(stderr, "get_block\n");
     if ((csr = freed) == NULL)
         return (NULL);
-    while (csr->next != freed)
+    while (csr->next != NULL)
     {
+        //fprintf(stderr, "=====\nloop get_block\n=====\n");
         if (csr->size >= size)
         {
             remove_block(csr);
@@ -121,6 +129,7 @@ t_block*        get_block(size_t size)
             ptr += sizeof(t_block);
             return (ptr);
         }
+        csr = csr->next;
     }
     if (csr->size >= size)
     {
