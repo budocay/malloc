@@ -23,6 +23,8 @@ static t_block* freed = NULL;
 
 t_block*        cast_mem(void *mem)
 {
+    if (mem == NULL)
+        fprintf(stdout, "cast_mem null pointer\n");
     if (mem == NULL || (size_t)mem <= sizeof(t_block))
         return (NULL);
     mem -= sizeof(t_block);
@@ -50,17 +52,26 @@ void            add_block(void *mem)
     void*       ptr;
 
     fprintf(stdout, "add_block\n");
-    if ((block = cast_mem(mem)) == NULL)
+    if ((block = cast_mem(mem)) == NULL) {
+        fprintf(stdout, "add_block cast failed\n");
         return;
+    }
     if ((csr = freed) == NULL)
     {
-        block->next = NULL;
-        block->prev = NULL;
+        fprintf(stdout, "add_block set new freed\n");
+        freed = block;
+        return;
+    }
+    else if ((size_t)block < (size_t)freed)
+    {
+        block->next = freed;
+        freed->prev = block;
         freed = block;
         return;
     }
     while (csr->next != NULL)
     {
+        dump_header(csr);
         ptr = csr;
         ptr += sizeof(t_block);
         ptr += csr->size;
@@ -73,7 +84,7 @@ void            add_block(void *mem)
             block->prev = NULL;
             return;
         }
-        else if ((size_t)ptr > (size_t)block)
+        else if ((size_t)csr > (size_t)block)
         {
             block->next = csr;
             block->prev = csr->prev;
@@ -121,7 +132,7 @@ t_block*        get_block(size_t size)
     fprintf(stdout, "get_block\n");
     if ((csr = freed) == NULL)
         return (NULL);
-    while (csr->next != NULL)
+    while (csr->next != NULL && csr->next != csr)
     {
         //fprintf(stdout, "=====\nloop get_block\n=====\n");
         if (csr->size >= size)

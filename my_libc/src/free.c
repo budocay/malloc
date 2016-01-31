@@ -13,6 +13,9 @@
 
 void    free(void *ptr)
 {
+    if (ptr == NULL)
+        return;
     fprintf(stdout, "free\n");
     add_block(ptr);
+    (void)ptr;
 }
