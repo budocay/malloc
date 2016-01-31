@@ -12,15 +12,17 @@ static void *global_base = NULL;
 
 t_block *get_block_ptr(void *ptr)
 {
-    return (t_block*)ptr -1;
+    return (t_block*)ptr - 1;
 }
 
-t_block *find_free_node(t_block **last, size_t sze)
+t_block *find_free_node(t_block **last, size_t size)
 {
-    t_block *current = global_base;
-    while (current && !(current->free && current->size >= sze))
+    t_block *current;
+
+    current = global_base;
+    while (current && !(current->free && current->size >= size))
     {
-        *last =current;
+        *last = current;
         current = current->next;
     }
     return current;
@@ -34,14 +36,11 @@ t_block  *need_space(t_block *last, size_t size)
     block = sbrk(0);
     request = sbrk(size + SIZE_ALLOC);
     if (request == (void*)-1)
-    {
-        dprintf(2, "%m\n");
         return NULL;
-    }
-    printf("La mémoire alloué est : %p sa taille est : %lu bytes\n", request, size);
     block->size = size;
     block->next = NULL;
     block->prev = last;
+    block->ptr = block->data;
     if(last)
         last->next = block;
     block->free = 0;
@@ -57,12 +56,14 @@ void    *malloc(size_t t)
     if (t <= 0)
         return NULL;
     size = align4(t);
-    if (global_base)
+  if (global_base != NULL)
     {
-        bl = need_space(NULL, size);
+        last = global_base;
+        bl = need_space(last, size);
         if (!bl)
             return NULL;
         global_base = bl;
+        bl->free = 0;
     }
     else
     {
@@ -95,44 +96,43 @@ void    *realloc(void *ptr,size_t size)
         return ptr;
     if ((new_alloc_ptr = malloc(size)) == NULL)
         return NULL;
-    printf("la mémoire réalloué est : %p sa taille est %lu bytes\n", new_alloc_ptr, size);
     if(!new_alloc_ptr)
     {
         dprintf(2, "%m\n");
         return NULL;
     }
     memcpy(new_alloc_ptr, ptr, block_ptr->size);
-    if (ptr != NULL)
-        free(ptr);
+    free(ptr);
     return new_alloc_ptr;
 }
 
-void  free(void *ptr)
-{
+void  free(void *ptr) {
+
     t_block *b;
 
-    if (valid_addr(ptr))
+    if (!ptr)
+        return;
+    b = get_block_ptr(ptr);
+    b->free = 1;
+    if (b->prev && b->prev->free)
+        b = fusion_block(b->prev);
+    if (b->next)
+        fusion_block(b);
+    else
     {
-
-        b = get_block_ptr(ptr);
-        b->free = 1;
-        if (b->prev && b->prev->free)
-            b = fusion_block(b->prev);
-        if (b->next)
-            fusion_block(b);
+        if (b->prev)
+            b->prev->next = NULL;
         else
-        {
-            if (b->prev)
-                b->prev->next = NULL;
-            else
-                global_base = NULL;
-        }
+            global_base = NULL;
     }
 }
 
 t_block *fusion_block(t_block *b)
 {
-    if (b->next && b->next->free) {
+    if (!b)
+        return NULL;
+    if (b->next && b->next->free)
+    {
         b->size += SIZE_ALLOC + b->next->size;
         b->next = b->next->next;
         if (b->next)
@@ -141,27 +141,16 @@ t_block *fusion_block(t_block *b)
     return b;
 }
 
-int     valid_addr(void *p)
-{
-    if (global_base != NULL)
-    {
-        if (p > global_base && p < sbrk(0))
-        {
-            return (p == (get_block_ptr(p)));
-        }
-    }
-    return 0;
-}
-
 void    splitblock(t_block *bl, size_t size)
 {
     t_block *new;
 
-    new = bl;
-    new->size = bl->size - size - SIZE_ALLOC;
+    new = (t_block *) bl->data + size;
+    new->size = (bl->size - size) - SIZE_ALLOC;
     new->next = bl->next;
     new->prev = bl;
     new->free = 1;
+    new->ptr = new->data;
     new->size = size;
     bl->next = new;
     if (new->next)
@@ -170,12 +159,14 @@ void    splitblock(t_block *bl, size_t size)
 
 void    *calloc(size_t size1, size_t size2)
 {
-    size_t size;
+    size_t size;;
     void    *ptr;
 
     size = size1 * size2;
-    ptr = malloc(size);
+    if (size < size1 * size2)
+        return NULL;
+    if ((ptr = malloc(size)) == NULL)
+        return NULL;
     memset(ptr, 0, size);
-    printf("L'adresse alloué par calloc est %p de taille %lu\n", ptr, size);
     return ptr;
 }
