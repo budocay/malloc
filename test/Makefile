@@ -1,6 +1,6 @@
 CC	= gcc
 
-CFLAGS	= -Wall -Wextra -std=c89 -fPIC
+CFLAGS	= -Wall -Wextra -fPIC
 
 LDFLAGS	= -shared
 

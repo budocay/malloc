@@ -19,8 +19,15 @@ static t_free_data  free_data = {NULL, NULL, {NULL}};
 
 bool                init_alloc_data(void)
 {
+    size_t          padding;
+
     if ((alloc_data.start_heap = sbrk(0)) == (void*)-1)
         return (false);
+    padding = sizeof(void*) - ((size_t)alloc_data.start_heap % sizeof(void*));
+    if (padding > 0 && brk(alloc_data.start_heap + padding))
+        return (false);
+    else
+        alloc_data.start_heap += padding;
     alloc_data.end_heap = alloc_data.start_heap;
     return (true);
 }
@@ -35,15 +42,55 @@ bool                alloc_mem(size_t size)
     return (true);
 }
 
+void                create_block(void *mem, size_t size)
+{
+    t_header*       block;
+
+    if ((block = mem) == NULL)
+        return;
+    block->size = size;
+    block->prev_address = NULL;
+    block->prev_size = NULL;
+    block->next_address = NULL;
+    block->next_size = NULL;
+}
+
+void                update_list(t_header *block, t_header **start, t_header **end)
+{
+    if (block == NULL)
+        return;
+    if (start != NULL && *start == NULL)
+        *start = block;
+    if (end != NULL)
+    {
+        if (*end == NULL) {
+            *end = block;
+            block->prev_address = NULL;
+        }
+        else {
+            (*end)->next_address = block;
+            block->prev_address = *end;
+            *end = block;
+        }
+    }
+    block->next_address = NULL;
+}
+
 void*               malloc(size_t size)
 {
     size_t          block_size;
+    void*           block;
 
+    size += sizeof(void*) - (size % sizeof(void*));
     block_size = size + sizeof(t_header);
     if (alloc_data.unassigned_mem < block_size &&
         !alloc_mem(block_size + BLOC_SIZE))
         return (NULL);
-    return (NULL);
+    block = alloc_data.end_heap - alloc_data.unassigned_mem;
+    create_block(block, size);
+    update_list(block, &(alloc_data.first_block), &(alloc_data.last_block));
+    alloc_data.unassigned_mem -= block_size;
+    return (block + sizeof(t_header));
 }
 
 void                free(void* ptr)
