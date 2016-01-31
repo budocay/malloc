@@ -10,14 +10,39 @@
 
 #include <string.h>
 #include <stdio.h>
+#include <stdbool.h>
+#include <unistd.h>
 #include "malloc.h"
 
 static t_alloc_data alloc_data = {NULL, NULL, NULL, NULL, 0};
 static t_free_data  free_data = {NULL, NULL, {NULL}};
 
+bool                init_alloc_data(void)
+{
+    if ((alloc_data.start_heap = sbrk(0)) == (void*)-1)
+        return (false);
+    alloc_data.end_heap = alloc_data.start_heap;
+    return (true);
+}
+
+bool                alloc_mem(size_t size)
+{
+    if ((alloc_data.start_heap == NULL && !init_alloc_data()) ||
+        brk(alloc_data.end_heap + size) < 0)
+        return (false);
+    alloc_data.end_heap += size;
+    alloc_data.unassigned_mem += size;
+    return (true);
+}
+
 void*               malloc(size_t size)
 {
-    (void)size;
+    size_t          block_size;
+
+    block_size = size + sizeof(t_header);
+    if (alloc_data.unassigned_mem < block_size &&
+        !alloc_mem(block_size + BLOC_SIZE))
+        return (NULL);
     return (NULL);
 }
 
