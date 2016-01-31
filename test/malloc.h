@@ -19,8 +19,8 @@
 typedef struct          s_header
 {
     size_t              size;
-    struct s_header*    prev_address;
-    struct s_header*    next_address;
+    struct s_header*    prev_address; /* Used for debugging */
+    struct s_header*    next_address; /* Used for debugging */
     struct s_header*    prev_size;
     struct s_header*    next_size;
 }                       t_header;
@@ -43,8 +43,8 @@ typedef struct          s_alloc_data
 
 typedef struct          s_free_data
 {
-    t_header*           first_block;
-    t_header*           last_block;
+    t_header*           first_block; /* Used for debugging */
+    t_header*           last_block; /* Used for debugging */
     t_header*           blocks[(BLOC_SIZE / sizeof(void*)) + 1];
 }                       t_free_data;
 
@@ -56,4 +56,4 @@ void*                   realloc(void*, size_t);
 void                    show_alloc_mem(void);
 void                    show_free_mem(void);
 
-#endif //MALLOC_MALLOC_H_H
+#endif /* MALLOC_MALLOC_H_H */
