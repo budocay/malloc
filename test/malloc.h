@@ -56,5 +56,6 @@ void*                   realloc(void*, size_t);
 
 void                    show_alloc_mem(void);
 void                    show_free_mem(void);
+void                    show_free_lists(void);
 
 #endif /* MALLOC_MALLOC_H_H */

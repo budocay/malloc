@@ -76,42 +76,64 @@ void                list_push_back(t_header *block, t_header **start, t_header *
     block->next_address = NULL;
 }
 
+void                insert_block_in_alloc_list(t_header* block)
+{
+    t_header*       csr;
+
+    if (block == NULL)
+        return;
+    if ((csr = alloc_data.first_block) == NULL)
+    {
+        alloc_data.first_block = block;
+        alloc_data.last_block = block;
+        csr->next_address = NULL;
+        csr->prev_address = NULL;
+        return;
+    }
+    while (csr->next_address != NULL && csr < block)
+        csr = csr->next_address;
+    if (csr < block)
+    {
+        block->next_address = csr->next_address;
+        block->prev_address = csr;
+        csr->next_address = block;
+    }
+    else
+    {
+        block->next_address = csr;
+        block->prev_address = csr->prev_address;
+        csr->prev_address = block;
+    }
+}
+
 t_header*           get_best_fit(size_t size)
 {
     size_t          idx;
     t_header*       csr;
-    t_header*       all;
 
     if (free_data.first_block == NULL || (idx = GET_FREE_IDX(size)) == BIG_IDX)
         return (NULL);
-    show_free_mem();
-    fprintf(stdout, "idx = %ld\n", idx);
-    while (idx < (BLOCK_SIZE - sizeof(t_header)))
+    while (idx < (BLOCK_SIZE - sizeof(t_header)) &&
+           idx <= (GET_FREE_IDX(size) + 5))
     {
         if ((csr = free_data.blocks[idx]) != NULL)
         {
-            fprintf(stdout, "csr = %p\n", csr);
-            fprintf(stdout, "csr->size = %ld\n", csr->size);
-            free_data.blocks[idx] = free_data.blocks[idx]->next_size;
-            if (csr->next_size != NULL)
-                csr->next_size->prev_size = NULL;
-            csr->next_size = NULL;
-            csr->prev_size = NULL;
+            if (csr == free_data.first_block)
+                free_data.first_block = free_data.first_block->next_address;
+            if (csr == free_data.last_block)
+                free_data.last_block = free_data.last_block->prev_address;
             if (csr->next_address != NULL)
                 csr->next_address->prev_address = csr->prev_address;
             if (csr->prev_address != NULL)
                 csr->prev_address->next_address = csr->next_address;
-            if ((all = alloc_data.first_block) != NULL)
-            {
-                while (all != NULL && all < csr)
-                    all = all->next_address;
-                csr->next_address = all;
-                if (all != NULL)
-                {
-                    csr->prev_address = all->prev_address;
-                    all->prev_address = csr;
-                }
-            }
+            free_data.blocks[idx] = csr->next_size;
+            if (csr->next_size != NULL)
+                csr->next_size->prev_size = csr->prev_size;
+            if (csr->prev_size != NULL)
+                csr->prev_size->next_size = csr->next_size;
+            csr->next_size = NULL;
+            csr->prev_size = NULL;
+            insert_block_in_alloc_list(csr);
             return (csr);
         }
         ++idx;
@@ -267,4 +289,33 @@ void                show_free_mem(void)
         csr = csr->next_address;
     }
     fprintf(stdout, "===== End of show_free_mem =====\n");
+}
+
+void                show_free_lists(void)
+{
+    size_t          idx;
+    t_header*       csr;
+
+    idx = 0;
+    fprintf(stdout, "===== Start of show_free_lists =====\n");
+    while (idx <= BIG_IDX)
+    {
+        if ((csr = free_data.blocks[idx]) != NULL)
+        {
+            fprintf(stdout, "Idx = %ld\n", idx);
+            while (csr != NULL)
+            {
+                fprintf(stdout, "Size of block : %ld\n", csr->size);
+                fprintf(stdout, "Address of previous block in address : %p\n", csr->prev_address);
+                fprintf(stdout, "Address of next block in address : %p\n", csr->next_address);
+                fprintf(stdout, "Address of previous block in size : %p\n", csr->prev_size);
+                fprintf(stdout, "Address of next block in size : %p\n", csr->next_size);
+                fprintf(stdout, "*****\n");
+                csr = csr->next_size;
+            }
+            fprintf(stdout, "/////\n");
+        }
+        idx++;
+    }
+    fprintf(stdout, "===== End of show_free_lists =====\n");
 }
