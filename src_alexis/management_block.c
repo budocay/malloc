@@ -10,7 +10,7 @@
 
 #include <unistd.h>
 #include <stdio.h>
-#include "malloc.h"
+#include "include/malloc.h"
 
 t_block		*fusion_block(t_block *b)
 {
@@ -21,7 +21,7 @@ t_block		*fusion_block(t_block *b)
       b->size += SIZE_ALLOC + b->next->size;
       b->next = b->next->next;
       if (b->next)
-	b->next->prev = b;
+	    b->next->prev = b;
     }
   return b;
 }

@@ -12,9 +12,22 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
-#include "malloc.h"
+#include "include/malloc.h"
 
 static void *global_base = NULL;
+
+t_block *find_free_node(t_block **last, size_t size)
+{
+  t_block *current;
+
+  current = global_base;
+  while (current && !(current->free && current->size >= size))
+    {
+      *last = current;
+      current = current->next;
+    }
+  return current;
+}
 
 void    *malloc(size_t t)
 {
@@ -25,37 +38,40 @@ void    *malloc(size_t t)
   if (t <= 0)
     return NULL;
   size = align4(t);
-  bl = NULL;
-  last = NULL;
   if (global_base != NULL)
     {
       last = global_base;
       bl = need_space(last, size);
       if (!bl)
-	return NULL;
+        return NULL;
       global_base = bl;
       bl->free = 0;
-    }
+     }
   else
-    glob_is_null(bl, last, size);
+    {
+      last = global_base;
+      bl = find_free_node(&last, size);
+      bl = glob_is_null(bl, last, size);
+      global_base = bl;
+    }
+  show_alloc_mem();
   return (bl+1);
 }
 
-void	glob_is_null(t_block *bl, t_block *last, size_t size)
+t_block		*glob_is_null(t_block *bl, t_block *last, size_t size)
 {
-  last = global_base;
-  bl = find_free_node(&last, size);
   if (!bl)
     {
       bl = need_space(last, size);
       if (!bl)
-	return;
+	    return NULL;
     }
   else
     {
       split_block(bl, size);
       bl->free = 0;
     }
+  return bl;
 }
 
 void    *realloc(void *ptr,size_t size)
@@ -102,15 +118,14 @@ void  free(void *ptr)
     }
 }
 
-t_block *find_free_node(t_block **last, size_t size)
+void    show_alloc_mem()
 {
-  t_block *current;
+  t_block *bl;
 
-  current = global_base;
-  while (current && !(current->free && current->size >= size))
-    {
-      *last = current;
-      current = current->next;
-    }
-  return current;
+  bl = global_base;
+  while (bl != NULL)
+  {
+    printf("break : %p\n%p - %p : %lu bytes\n", bl, global_base, bl->next, bl->size);
+    bl = bl->prev;
+  }
 }
