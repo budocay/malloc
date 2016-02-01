@@ -55,7 +55,7 @@ void                create_block(void *mem, size_t size)
     block->next_size = NULL;
 }
 
-void                update_list(t_header *block, t_header **start, t_header **end)
+void                list_push_back(t_header *block, t_header **start, t_header **end)
 {
     if (block == NULL)
         return;
@@ -76,26 +76,127 @@ void                update_list(t_header *block, t_header **start, t_header **en
     block->next_address = NULL;
 }
 
+t_header*           get_best_fit(size_t size)
+{
+    size_t          idx;
+    t_header*       csr;
+    t_header*       all;
+
+    if (free_data.first_block == NULL || (idx = GET_FREE_IDX(size)) == BIG_IDX)
+        return (NULL);
+    show_free_mem();
+    fprintf(stdout, "idx = %ld\n", idx);
+    while (idx < (BLOCK_SIZE - sizeof(t_header)))
+    {
+        if ((csr = free_data.blocks[idx]) != NULL)
+        {
+            fprintf(stdout, "csr = %p\n", csr);
+            fprintf(stdout, "csr->size = %ld\n", csr->size);
+            free_data.blocks[idx] = free_data.blocks[idx]->next_size;
+            if (csr->next_size != NULL)
+                csr->next_size->prev_size = NULL;
+            csr->next_size = NULL;
+            csr->prev_size = NULL;
+            if (csr->next_address != NULL)
+                csr->next_address->prev_address = csr->prev_address;
+            if (csr->prev_address != NULL)
+                csr->prev_address->next_address = csr->next_address;
+            if ((all = alloc_data.first_block) != NULL)
+            {
+                while (all != NULL && all < csr)
+                    all = all->next_address;
+                csr->next_address = all;
+                if (all != NULL)
+                {
+                    csr->prev_address = all->prev_address;
+                    all->prev_address = csr;
+                }
+            }
+            return (csr);
+        }
+        ++idx;
+    }
+    return (NULL);
+}
+
 void*               malloc(size_t size)
 {
     size_t          block_size;
     void*           block;
+    void*           fit_block;
 
     size += sizeof(void*) - (size % sizeof(void*));
     block_size = size + sizeof(t_header);
+    if ((fit_block = get_best_fit(size)) != NULL)
+        return (fit_block + sizeof(t_header));
     if (alloc_data.unassigned_mem < block_size &&
-        !alloc_mem(block_size + BLOC_SIZE))
+        !alloc_mem(block_size + (BLOCK_SIZE - (block_size % BLOCK_SIZE))))
         return (NULL);
     block = alloc_data.end_heap - alloc_data.unassigned_mem;
     create_block(block, size);
-    update_list(block, &(alloc_data.first_block), &(alloc_data.last_block));
+    list_push_back(block, &(alloc_data.first_block), &(alloc_data.last_block));
     alloc_data.unassigned_mem -= block_size;
     return (block + sizeof(t_header));
 }
 
+void                put_block_in_size_free_list(t_header *header)
+{
+    size_t          idx;
+    t_header*       csr;
+
+    if (header == NULL)
+        return;
+    idx = GET_FREE_IDX(header->size);
+    csr = free_data.blocks[idx];
+    if (idx < (BLOCK_SIZE / sizeof(void*)))
+    {
+        header->next_size = csr;
+        header->prev_size = NULL;
+        if (csr != NULL)
+            csr->prev_size = header;
+        free_data.blocks[idx] = header;
+    }
+    else
+    {
+        if (csr == NULL)
+        {
+            free_data.blocks[idx] = header;
+            return;
+        }
+        while (csr->next_size != NULL && csr->size <= header->size)
+            csr = csr->next_size;
+        header->next_size = csr->next_size;
+        header->prev_size = csr;
+        csr->next_size = header;
+    }
+}
+
+void                put_block_in_address_free_list(t_header *header)
+{
+    if (header == NULL)
+        return;
+    if (header->prev_address != NULL)
+        header->prev_address->next_address = header->next_address;
+    if (header->next_address != NULL)
+        header->next_address->prev_address = header->prev_address;
+    header->next_address = NULL;
+    header->prev_address = free_data.last_block;
+    if (free_data.first_block == NULL)
+        free_data.first_block = header;
+    else
+        free_data.last_block->next_address = header;
+    free_data.last_block = header;
+}
+
 void                free(void* ptr)
 {
-    (void)ptr;
+    t_header*       header;
+
+    if (ptr == NULL)
+        return;
+    header = ptr - sizeof(t_header);
+    put_block_in_size_free_list(header);
+    put_block_in_address_free_list(header);
 }
 
 void*               calloc(size_t n, size_t size)
@@ -152,9 +253,9 @@ void                show_free_mem(void)
 {
     t_header*       csr;
 
-    if (free_data.first_block == NULL)
-        return;
     fprintf(stdout, "===== Start of show_free_mem =====\n");
+    if ((csr = free_data.first_block) == NULL)
+        return;
     while (csr != NULL)
     {
         fprintf(stdout, "Size of block : %ld\n", csr->size);

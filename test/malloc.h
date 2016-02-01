@@ -13,8 +13,9 @@
 
 #include <stdlib.h>
 
-#define BLOC_SIZE       4096
-#define GET_FREE_IDX(x) ((x < BLOCK_SIZE) ? (int)(x / sizeof(void*)) : (BLOC_SIZE) / sizeof(void*))
+#define BLOCK_SIZE      4096
+#define BIG_IDX (BLOCK_SIZE / sizeof(void*))
+#define GET_FREE_IDX(x) ((x < (BLOCK_SIZE - sizeof(void*))) ? x / sizeof(void*) : BIG_IDX)
 
 typedef struct          s_header
 {
@@ -45,7 +46,7 @@ typedef struct          s_free_data
 {
     t_header*           first_block; /* Used for debugging */
     t_header*           last_block; /* Used for debugging */
-    t_header*           blocks[(BLOC_SIZE / sizeof(void*)) + 1];
+    t_header*           blocks[BIG_IDX + 1];
 }                       t_free_data;
 
 void*                   malloc(size_t);
