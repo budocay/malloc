@@ -26,7 +26,7 @@ t_block *find_free_node(t_block **last, size_t size)
       *last = current;
       current = current->next;
     }
-  return current;
+  return (current);
 }
 
 void    *malloc(size_t t)
@@ -71,7 +71,7 @@ t_block		*glob_is_null(t_block *bl, t_block *last, size_t size)
       split_block(bl, size);
       bl->free = 0;
     }
-  return bl;
+  return (bl);
 }
 
 void  free(void *ptr)
