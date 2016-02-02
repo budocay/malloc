@@ -10,8 +10,7 @@ void            show_alloc_mem(void)
     t_block*    bl;
     t_alloc*    data;
 
-    data = get_data();
-    if ((bl = data->first_block) == NULL)
+    if ((data = get_data()) == NULL || (bl = data->first_block) == NULL)
         return;
     printf("break : %p\n", data->brk);
     while (bl != NULL)
@@ -27,9 +26,9 @@ void            show_mem(void)
     t_block*    bl;
     t_alloc*    data;
 
-    data = get_data();
-    if ((bl = data->first_block) == NULL)
+    if ((data = get_data()) == NULL || (bl = data->first_block) == NULL)
         return;
+    printf("start of heap : %p\n", data->start_heap);
     printf("break : %p\n", data->brk);
     while (bl != NULL)
     {

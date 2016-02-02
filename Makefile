@@ -5,7 +5,7 @@
 ## Login   <lina_a@epitech.net>
 ## 
 ## Started on  Tue Jan 20 11:10:49 2015 lina_a
-## Last update Tue Feb  2 11:38:34 2016 pirou_g
+## Last update Tue Feb  2 17:54:37 2016 pirou_g
 ##
 
 CC		= gcc
@@ -23,7 +23,8 @@ SRCS		= ./src_alexis/malloc.c \
 	  	  ./src_alexis/management_block.c \
 	  	  ./src_alexis/calloc.c \
 	  	  ./src_alexis/free.c \
-		  ./src_alexis/realloc.c
+		  ./src_alexis/realloc.c \
+		  ./src_alexis/show_alloc_mem.c
 
 OBJS		= $(SRCS:.c=.o)
 
