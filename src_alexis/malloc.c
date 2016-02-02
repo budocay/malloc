@@ -18,6 +18,11 @@
 
 static t_alloc  data = {NULL, NULL, NULL, 0, NULL, {NULL}};
 
+t_alloc*        get_data(void)
+{
+    return (&data);
+}
+
 t_block*        find_free_node(t_block **last, size_t size)
 {
     t_block*    current;
@@ -40,9 +45,9 @@ void*           malloc(size_t t)
     if (!t)
         return (NULL);
     size = align4(t);
-    if (data.global_base != NULL)
+    last = data.global_base;
+    if (last != NULL)
     {
-        last = data.global_base;
         bl = need_space(last, size);
         if (bl == NULL)
             return (NULL);
@@ -51,7 +56,6 @@ void*           malloc(size_t t)
     }
     else
     {
-        last = data.global_base;
         bl = find_free_node(&last, size);
         bl = glob_is_null(bl, last, size);
         data.global_base = bl;
