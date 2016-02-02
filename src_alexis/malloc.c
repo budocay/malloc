@@ -219,6 +219,7 @@ void            show_mem(void)
 
     if ((bl = data.first_block) == NULL)
         return;
+    printf("start of heap : %p\n", data.start_heap);
     printf("break : %p\n", data.brk);
     while (bl != NULL)
     {
