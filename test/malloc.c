@@ -17,6 +17,8 @@
 static t_alloc_data alloc_data = {NULL, NULL, NULL, NULL, 0};
 static t_free_data  free_data = {NULL, NULL, {NULL}};
 
+void                show_block(t_header *csr);
+
 bool                init_alloc_data(void)
 {
     size_t          padding;
@@ -134,6 +136,7 @@ t_header*           get_best_fit(size_t size)
             csr->next_size = NULL;
             csr->prev_size = NULL;
             insert_block_in_alloc_list(csr);
+            show_block(csr);
             return (csr);
         }
         ++idx;
@@ -251,6 +254,17 @@ void*               realloc(void* ptr, size_t size)
     memcpy(dest, ptr, header->size);
     free(ptr);
     return (dest);
+}
+
+void                show_block(t_header *csr)
+{
+    if (csr == NULL)
+        return;
+    fprintf(stdout, "Size of block : %ld\n", csr->size);
+    fprintf(stdout, "Address of previous block in address : %p\n", csr->prev_address);
+    fprintf(stdout, "Address of next block in address : %p\n", csr->next_address);
+    fprintf(stdout, "Address of previous block in size : %p\n", csr->prev_size);
+    fprintf(stdout, "Address of next block in size : %p\n", csr->next_size);
 }
 
 void                show_alloc_mem(void)
