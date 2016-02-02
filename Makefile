@@ -5,7 +5,7 @@
 ## Login   <lina_a@epitech.net>
 ## 
 ## Started on  Tue Jan 20 11:10:49 2015 lina_a
-## Last update Tue Feb  2 10:57:30 2016 pirou_g
+## Last update Tue Feb  2 11:17:58 2016 pirou_g
 ##
 
 CC		= gcc
@@ -21,7 +21,8 @@ LDFLAGS		= -shared
 
 SRCS		= ./src_alexis/malloc.c \
 	  	  ./src_alexis/management_block.c \
-	  	  ./src_alexis/calloc.c
+	  	  ./src_alexis/calloc.c \
+		  ./src_alexis/realloc.c
 
 OBJS		= $(SRCS:.c=.o)
 
