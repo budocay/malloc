@@ -46,7 +46,7 @@ void*               realloc(void * ptr, size_t size);
 t_block*            fusion_block(t_block *b);
 void                split_block(t_block *bl, size_t size);
 void*               calloc(size_t size1, size_t size2);
-t_block*            find_free_node(t_block **last, size_t size);
+t_block*            find_free_node(size_t size);
 t_block*            get_block_ptr(void *ptr);
 void                show_alloc_mem(void);
 void                show_mem(void);

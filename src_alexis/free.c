@@ -20,7 +20,7 @@ void            free(void *ptr)
         b = fusion_block(b);
     if (b->prev != NULL)
         fusion_block(b->prev);
-    else
+    /* else
     {
         if (b->prev != NULL)
             b->prev->next = b->next;
@@ -28,5 +28,5 @@ void            free(void *ptr)
             b->next->prev = b->prev;
         else
             data->first_block = NULL;
-    }
+    } */
 }

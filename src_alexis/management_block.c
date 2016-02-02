@@ -72,19 +72,17 @@ t_block*        create_block_with_mem_left(size_t size)
     return (bl);
 }
 
-t_block*        find_free_node(t_block **last, size_t size)
+t_block*        find_free_node(size_t size)
 {
     t_block*    current;
     t_alloc*    data;
 
     data = get_data();
-    if (data->first_block == NULL)
+    if ((current = data->first_block) == NULL)
         return (NULL);
-    current = data->first_block;
-    while (current && !(current->free && current->size >= size))
-    {
-        *last = current;
+    while (current != NULL && !current->free && current->size < size)
         current = current->next;
-    }
+    if (current != NULL)
+        current->free = 0;
     return (current);
 }
