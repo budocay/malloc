@@ -30,12 +30,11 @@ void    split_block(t_block *bl, size_t size)
 {
   t_block *new;
 
-  new = (t_block *) bl->data + size;
+  new = bl;
   new->size = (bl->size - size) - SIZE_ALLOC;
   new->next = bl->next;
   new->prev = bl;
   new->free = 1;
-  new->ptr = new->data;
   new->size = size;
   bl->next = new;
   if (new->next)
@@ -54,7 +53,7 @@ t_block  *need_space(t_block *last, size_t size)
   block->size = size;
   block->next = NULL;
   block->prev = last;
-  if(last)
+  if (last)
     last->next = block;
   block->free = 0;
   return block;

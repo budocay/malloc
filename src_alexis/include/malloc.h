@@ -12,15 +12,15 @@
 #define MALLOC_H_
 
 #define SIZE_ALLOC sizeof(t_block)
-#define align4(x) (((((x)-1)>>2)<<2)+8)
+#define align4(x) (((((x)-1)>>2)<<2)+4)
+
+#include <stddef.h>
 
 typedef struct s_block{
     size_t size;
     struct s_block *next;
     struct s_block *prev;
     int     free;
-    void    *ptr;
-    char    data[1];
 }t_block;
 
 void *malloc(size_t t);

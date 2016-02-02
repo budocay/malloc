@@ -11,7 +11,6 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <string.h>
-#include <stdio.h>
 #include "include/malloc.h"
 
 static void *global_base = NULL;
@@ -54,7 +53,6 @@ void    *malloc(size_t t)
       bl = glob_is_null(bl, last, size);
       global_base = bl;
     }
-  show_alloc_mem();
   return (bl+1);
 }
 
@@ -73,29 +71,6 @@ t_block		*glob_is_null(t_block *bl, t_block *last, size_t size)
     }
   return bl;
 }
-
-void    *realloc(void *ptr,size_t size)
-{
-  t_block *block_ptr;
-  void    *new_alloc_ptr;
-
-  if (!ptr)
-    return malloc(size);
-  block_ptr = get_block_ptr(ptr);
-  if(block_ptr->size >= size)
-    return ptr;
-  if ((new_alloc_ptr = malloc(size)) == NULL)
-    return NULL;
-  if(!new_alloc_ptr)
-    {
-      dprintf(2, "%m\n");
-      return NULL;
-    }
-  memcpy(new_alloc_ptr, ptr, block_ptr->size);
-  free(ptr);
-  return new_alloc_ptr;
-}
-
 
 void  free(void *ptr)
 {
@@ -125,7 +100,7 @@ void    show_alloc_mem()
   bl = global_base;
   while (bl != NULL)
   {
-    printf("break : %p\n%p - %p : %lu bytes\n", bl, global_base, bl->next, bl->size);
+    //printf("break : %p\n%p - %p : %lu bytes\n", bl, bl->prev, bl->next, bl->size);
     bl = bl->prev;
   }
 }
