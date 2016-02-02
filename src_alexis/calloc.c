@@ -11,6 +11,7 @@
 #include <unistd.h>
 #include <string.h>
 #include <stdlib.h>
+#include <stdio.h>
 #include "./include/malloc.h"
 
 void    *calloc(size_t size1, size_t size2)
@@ -24,5 +25,6 @@ void    *calloc(size_t size1, size_t size2)
   if ((ptr = malloc(size)) == NULL)
     return NULL;
   memset(ptr, 0, size);
+  printf("Calloc\n");
   return ptr;
 }

@@ -11,6 +11,7 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdio.h>
 #include "include/malloc.h"
 
 static void *global_base = NULL;
@@ -53,6 +54,7 @@ void    *malloc(size_t t)
       bl = glob_is_null(bl, last, size);
       global_base = bl;
     }
+  printf("Malloc\n");
   return (bl+1);
 }
 
@@ -91,6 +93,7 @@ void  free(void *ptr)
       else
 	global_base = NULL;
     }
+  printf("free\n");
 }
 
 void    show_alloc_mem()

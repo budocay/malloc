@@ -20,11 +20,9 @@ void    *realloc(void *ptr, size_t size)
     if ((new_alloc_ptr = malloc(size)) == NULL)
         return NULL;
     if(!new_alloc_ptr)
-    {
-        dprintf(2, "%m\n");
         return NULL;
-    }
     memcpy(new_alloc_ptr, ptr, block_ptr->size);
     free(ptr);
+    printf("Realloc\n");
     return new_alloc_ptr;
 }
