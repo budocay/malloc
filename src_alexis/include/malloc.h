@@ -47,11 +47,11 @@ t_block*            fusion_block(t_block *b);
 void                split_block(t_block *bl, size_t size);
 void*               calloc(size_t size1, size_t size2);
 t_block*            find_free_node(t_block **last, size_t size);
-t_block*            need_space(t_block *last, size_t size);
-t_block*	        glob_is_null(t_block *, t_block*, size_t);
 t_block*            get_block_ptr(void *ptr);
 void                show_alloc_mem(void);
 void                show_mem(void);
 t_alloc*            get_data(void);
+t_block*            create_block_with_mem_left(size_t size);
+int                 init_heap_data(void);
 
 #endif /* MALLOC_H_! */
