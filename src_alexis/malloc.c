@@ -16,7 +16,7 @@
 
 /* static void*  global_base = NULL; */
 
-static t_alloc  data = {NULL, NULL, NULL, 0, NULL, {NULL}};
+static t_alloc  data = {NULL, NULL, NULL, 0, {NULL}};
 
 t_alloc*        get_data(void)
 {
@@ -27,7 +27,7 @@ t_block*        find_free_node(t_block **last, size_t size)
 {
     t_block*    current;
 
-    current = data.global_base;
+    current = data.first_block;
     while (current && !(current->free && current->size >= size))
     {
         *last = current;
@@ -45,20 +45,20 @@ void*           malloc(size_t t)
     if (!t)
         return (NULL);
     size = align4(t);
-    last = data.global_base;
+    last = data.first_block;
     if (last != NULL)
     {
         bl = need_space(last, size);
         if (bl == NULL)
             return (NULL);
-        data.global_base = bl;
+        data.first_block = bl;
         bl->free = 0;
     }
     else
     {
         bl = find_free_node(&last, size);
         bl = glob_is_null(bl, last, size);
-        data.global_base = bl;
+        data.first_block = bl;
     }
     fprintf(stderr, "Malloc\n");
     return (bl+1);
@@ -96,7 +96,7 @@ void            free(void *ptr)
         if (b->prev)
             b->prev->next = NULL;
         else
-            data.global_base = NULL;
+            data.first_block = NULL;
     }
     fprintf(stderr, "free\n");
 }
@@ -105,7 +105,7 @@ void            show_alloc_mem()
 {
     t_block*    bl;
 
-    bl = data.global_base;
+    bl = data.first_block;
     while (bl != NULL)
     {
         //printf("break : %p\n%p - %p : %lu bytes\n", bl, bl->prev, bl->next, bl->size);
