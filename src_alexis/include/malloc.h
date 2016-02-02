@@ -11,6 +11,7 @@
 #ifndef MALLOC_H_
 #define MALLOC_H_
 
+//#define BLOCK_SIZE  4096
 #define BLOCK_SIZE   1048576
 #define BIG_IDX     (BLOCK_SIZE / sizeof(void*))
 #define GET_IDX(x)  ((x < (BLOCK_SIZE - sizeof(void*))) ? x / sizeof(void*) : BIG_IDX)
@@ -31,6 +32,7 @@ typedef struct      s_block
 typedef struct      s_alloc
 {
     t_block*        first_block;
+    t_block*        last_block;
     void*           start_heap;
     void*           brk;
     size_t          mem_left;
