@@ -202,11 +202,13 @@ void            show_alloc_mem(void)
 {
     t_block*    bl;
 
-    bl = data.first_block;
+    if ((bl = data.first_block) == NULL)
+        return;
+    printf("break : %p\n", data.brk);
     while (bl != NULL)
     {
         if (!bl->free)
-            printf("break : %p\n%p - %p : %lu bytes\n", bl, bl->prev, bl->next, bl->size);
+            printf("%p - %p : %lu bytes\n", bl, (void*)bl + bl->size, bl->size);
         bl = bl->next;
     }
 }
@@ -215,10 +217,12 @@ void            show_mem(void)
 {
     t_block*    bl;
 
-    bl = data.first_block;
+    if ((bl = data.first_block) == NULL)
+        return;
+    printf("break : %p\n", data.brk);
     while (bl != NULL)
     {
-        printf("break : %p\n%p - %p : %lu bytes\nfree : %d\n", bl, bl->prev, bl->next, bl->size, bl->free);
+        printf("%p - %p : %lu bytes\nfree : %d\n", bl, (void*)bl + bl->size + sizeof(t_block), bl->size, bl->free);
         bl = bl->next;
     }
 }
