@@ -22,6 +22,7 @@ LDFLAGS		= -shared
 SRCS		= ./src_alexis/malloc.c \
 	  	  ./src_alexis/management_block.c \
 	  	  ./src_alexis/calloc.c \
+	  	  ./src_alexis/free.c \
 		  ./src_alexis/realloc.c
 
 OBJS		= $(SRCS:.c=.o)

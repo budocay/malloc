@@ -17,7 +17,6 @@ t_block*        fusion_block(t_block *b)
 {
     t_block*    cpy;
 
-    //fprintf(stderr, "fusion_block\n");
     if (b == NULL)
         return (NULL);
     cpy = b->next;
@@ -36,7 +35,6 @@ void            split_block(t_block *bl, size_t size)
 {
     t_block*    new;
 
-    //fprintf(stderr, "split_block\n");
     new = bl;
     new->size = (bl->size - size) - SIZE_ALLOC;
     new->next = bl->next;
@@ -48,26 +46,45 @@ void            split_block(t_block *bl, size_t size)
         new->next->prev = new;
 }
 
-t_block*        need_space(t_block *last, size_t size)
-{
-    t_block*    block;
-    void*       request;
-
-    //fprintf(stderr, "need_space\n");
-    block = sbrk(0);
-    request = sbrk(size + SIZE_ALLOC);
-    if (request == (void*)-1)
-        return (NULL);
-    block->size = size;
-    block->next = NULL;
-    block->prev = last;
-    if (last)
-        last->next = block;
-    block->free = 0;
-    return (block);
-}
-
 t_block*        get_block_ptr(void *ptr)
 {
     return ((ptr != NULL) ? (t_block*)ptr - 1 : NULL);
+}
+
+t_block*        create_block_with_mem_left(size_t size)
+{
+    size_t      length;
+    t_block*    bl;
+    t_alloc*    data;
+
+    length = size + sizeof(t_block);
+    data = get_data();
+    if ((data->start_heap == NULL || data->brk == NULL) &&
+        init_heap_data() < 0)
+        return (NULL);
+    if (data->mem_left < length)
+        return (NULL);
+    bl = data->brk - data->mem_left;
+    bl->next_size = NULL;
+    bl->size = size;
+    bl->free = 0;
+    data->mem_left -= length;
+    return (bl);
+}
+
+t_block*        find_free_node(t_block **last, size_t size)
+{
+    t_block*    current;
+    t_alloc*    data;
+
+    data = get_data();
+    if (data->first_block == NULL)
+        return (NULL);
+    current = data->first_block;
+    while (current && !(current->free && current->size >= size))
+    {
+        *last = current;
+        current = current->next;
+    }
+    return (current);
 }
