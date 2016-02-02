@@ -16,23 +16,23 @@
 
 #include <stddef.h>
 
-typedef struct s_block{
-    size_t size;
-    struct s_block *next;
-    struct s_block *prev;
-    int     free;
-}t_block;
+typedef struct      s_block{
+    size_t          size;
+    struct s_block* next;
+    struct s_block* prev;
+    size_t          free;
+}                   t_block;
 
-void *malloc(size_t t);
-void free(void * ptr);
-void *realloc(void * ptr, size_t size);
-t_block *fusion_block(t_block *b);
-void    split_block(t_block *bl, size_t size);
-void    *calloc(size_t size1, size_t size2);
-t_block *find_free_node(t_block **last, size_t size);
-t_block  *need_space(t_block *last, size_t size);
-t_block	*glob_is_null(t_block *, t_block*, size_t);
-t_block *get_block_ptr(void *ptr);
-void    show_alloc_mem();
+void*               malloc(size_t t);
+void                free(void * ptr);
+void*               realloc(void * ptr, size_t size);
+t_block*            fusion_block(t_block *b);
+void                split_block(t_block *bl, size_t size);
+void*               calloc(size_t size1, size_t size2);
+t_block*            find_free_node(t_block **last, size_t size);
+t_block*            need_space(t_block *last, size_t size);
+t_block*	        glob_is_null(t_block *, t_block*, size_t);
+t_block*            get_block_ptr(void *ptr);
+void                show_alloc_mem();
 
 #endif /* MALLOC_H_! */

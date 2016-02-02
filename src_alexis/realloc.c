@@ -7,13 +7,13 @@
 #include <stdio.h>
 #include "include/malloc.h"
 
-void    *realloc(void *ptr, size_t size)
+void*           realloc(void *ptr, size_t size)
 {
-    t_block *block_ptr;
-    void    *new_alloc_ptr;
+    t_block*    block_ptr;
+    void*       new_alloc_ptr;
 
     if (ptr == NULL)
-        return malloc(size);
+        return (malloc(size));
     else if (size == 0)
     {
         free(ptr);
@@ -24,10 +24,8 @@ void    *realloc(void *ptr, size_t size)
         return ptr;
     if ((new_alloc_ptr = malloc(size)) == NULL)
         return (NULL);
-    /* if(!new_alloc_ptr)
-        return NULL; */
     memcpy(new_alloc_ptr, ptr, block_ptr->size);
     free(ptr);
-    printf("Realloc\n");
+    fprintf(stderr, "Realloc\n");
     return (new_alloc_ptr);
 }
