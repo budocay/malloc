@@ -19,6 +19,7 @@
 #define align4(x)   (((((x)-1)>>2)<<2)+4)
 
 #include <stddef.h>
+#include <stdint.h>
 
 typedef struct      s_block
 {
@@ -26,7 +27,7 @@ typedef struct      s_block
     struct s_block* next;
     struct s_block* prev;
     struct s_block* next_size;
-    size_t          free;
+    uint32_t        free;
 }                   t_block;
 
 typedef struct      s_alloc
@@ -36,7 +37,7 @@ typedef struct      s_alloc
     void*           start_heap;
     void*           brk;
     size_t          mem_left;
-    t_block*        free_blocks[BIG_IDX + 1];
+    //t_block*        free_blocks[BIG_IDX + 1];
 }                   t_alloc;
 
 void*               malloc(size_t t);
@@ -49,7 +50,8 @@ t_block*            find_free_node(t_block **last, size_t size);
 t_block*            need_space(t_block *last, size_t size);
 t_block*	        glob_is_null(t_block *, t_block*, size_t);
 t_block*            get_block_ptr(void *ptr);
-void                show_alloc_mem();
+void                show_alloc_mem(void);
+void                show_mem(void);
 t_alloc*            get_data(void);
 
 #endif /* MALLOC_H_! */

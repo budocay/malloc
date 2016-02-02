@@ -18,7 +18,7 @@ void*           realloc(void *ptr, size_t size)
     t_block*    block_ptr;
     void*       new_alloc_ptr;
 
-    fprintf(stderr, "Realloc\n");
+    //fprintf(stderr, "Realloc\n");
     if (ptr == NULL)
         return (malloc(size));
     else if (size == 0)
@@ -33,6 +33,6 @@ void*           realloc(void *ptr, size_t size)
         return (NULL);
     memcpy(new_alloc_ptr, ptr, block_ptr->size);
     free(ptr);
-    fprintf(stderr, "End of Realloc\n");
+    //fprintf(stderr, "End of Realloc\n");
     return (new_alloc_ptr);
 }

@@ -19,13 +19,13 @@ void*     calloc(size_t size1, size_t size2)
     size_t  size;
     void*   ptr;
 
-    fprintf(stderr, "Calloc\n");
+    //fprintf(stderr, "Calloc\n");
     size = size1 * size2;
     if (size < (size1 * size2))
         return (NULL);
     if ((ptr = malloc(size)) == NULL)
         return (NULL);
     memset(ptr, 0, size);
-    fprintf(stderr, "End of Calloc\n");
+    //fprintf(stderr, "End of Calloc\n");
     return (ptr);
 }

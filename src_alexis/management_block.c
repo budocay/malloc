@@ -17,7 +17,7 @@ t_block*        fusion_block(t_block *b)
 {
     t_block*    cpy;
 
-    fprintf(stderr, "fusion_block\n");
+    //fprintf(stderr, "fusion_block\n");
     if (b == NULL)
         return (NULL);
     cpy = b->next;
@@ -36,7 +36,7 @@ void            split_block(t_block *bl, size_t size)
 {
     t_block*    new;
 
-    fprintf(stderr, "split_block\n");
+    //fprintf(stderr, "split_block\n");
     new = bl;
     new->size = (bl->size - size) - SIZE_ALLOC;
     new->next = bl->next;
@@ -53,7 +53,7 @@ t_block*        need_space(t_block *last, size_t size)
     t_block*    block;
     void*       request;
 
-    fprintf(stderr, "need_space\n");
+    //fprintf(stderr, "need_space\n");
     block = sbrk(0);
     request = sbrk(size + SIZE_ALLOC);
     if (request == (void*)-1)
