@@ -5,35 +5,37 @@
 ## Login   <lina_a@epitech.net>
 ## 
 ## Started on  Tue Jan 20 11:10:49 2015 lina_a
-## Last update Tue Jan 20 11:10:49 2015 lina_a
+## Last update Tue Feb  2 10:57:30 2016 pirou_g
 ##
 
-CC	= gcc
+CC		= gcc
 
-RM	= rm -f
+RM		= rm -f
 
-NAME	= malloc.so
+NAME		= libmy_malloc.so
 
-CFLAGS	+= -Wall -Wextra -Werror -fPIC -shared
-CFLAGS	+= -I ./src_alexis/include
+CFLAGS		= -Wall -Wextra -Werror -fPIC
+CFLAGS		+= -I ./src_alexis/include
 
-SRCS	= ./src_alexis/malloc.c \
-	  ./src_alexis/management_block.c \
-	  ./src_alexis/calloc.c
+LDFLAGS		= -shared
 
-OBJS	= $(SRCS:.c=.o)
+SRCS		= ./src_alexis/malloc.c \
+	  	  ./src_alexis/management_block.c \
+	  	  ./src_alexis/calloc.c
 
-all:	$(NAME)
+OBJS		= $(SRCS:.c=.o)
+
+all:		$(NAME)
 
 $(NAME):	$(OBJS)
-	$(CC) -o $(OBJS) $(CFLAGS) $(NAME)
+		$(CC) $(OBJS) $(LDFLAGS) -o $(NAME)
 
 clean:
-	$(RM) $(OBJS)
+		$(RM) $(OBJS)
 
-fclean: clean
-	$(RM) $(NAME)
+fclean:		clean
+		$(RM) $(NAME)
 
-re: fclean all
+re: 		fclean all
 
-.PHONY: re clean fclean
+.PHONY: 	re clean fclean all
