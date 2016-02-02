@@ -10,18 +10,24 @@
 
 #include <unistd.h>
 #include <stdio.h>
+#include <string.h>
 #include "include/malloc.h"
 
 t_block*        fusion_block(t_block *b)
 {
+    t_block*    cpy;
+
+    fprintf(stderr, "fusion_block\n");
     if (b == NULL)
         return (NULL);
+    cpy = b->next;
     if (b->next != NULL && b->next->free)
     {
         b->size += SIZE_ALLOC + b->next->size;
         b->next = b->next->next;
-        if (b->next)
+        if (b->next != NULL)
             b->next->prev = b;
+        memset(cpy, 0, sizeof(t_block));
     }
     return (b);
 }
@@ -30,6 +36,7 @@ void            split_block(t_block *bl, size_t size)
 {
     t_block*    new;
 
+    fprintf(stderr, "split_block\n");
     new = bl;
     new->size = (bl->size - size) - SIZE_ALLOC;
     new->next = bl->next;
@@ -46,6 +53,7 @@ t_block*        need_space(t_block *last, size_t size)
     t_block*    block;
     void*       request;
 
+    fprintf(stderr, "need_space\n");
     block = sbrk(0);
     request = sbrk(size + SIZE_ALLOC);
     if (request == (void*)-1)

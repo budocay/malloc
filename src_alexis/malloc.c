@@ -27,7 +27,12 @@ t_block*        find_free_node(t_block **last, size_t size)
 {
     t_block*    current;
 
+    if (data.first_block == NULL)
+        return (NULL);
     current = data.first_block;
+    fprintf(stderr, "find_free_node : data.first_block = %p\n", data.first_block);
+    fprintf(stderr, "idem : data.size = %ld\n", data.first_block->size);
+    fprintf(stderr, "idem : data.next = %p\n", data.first_block->next);
     while (current && !(current->free && current->size >= size))
     {
         *last = current;
@@ -72,6 +77,8 @@ void            insert_block(t_block *bl)
     {
         data.first_block = bl;
         data.last_block = bl;
+        bl->next = NULL;
+        bl->prev = NULL;
         return;
     }
     bl->next = NULL;
@@ -109,6 +116,7 @@ t_block*        create_block_with_mem_left(size_t size)
     bl = data.brk - data.mem_left;
     bl->next_size = NULL;
     bl->size = size;
+    bl->free = 0;
     data.mem_left -= length;
     return (bl);
 }
@@ -167,21 +175,26 @@ void            free(void *ptr)
 {
     t_block*    b;
 
-    if (ptr == NULL)
+    if (ptr == NULL || ptr < data.start_heap || ptr > data.brk)
         return;
-    b = get_block_ptr(ptr);
+    // b = get_block_ptr(ptr);
+    b = (ptr - sizeof(t_block));
+    fprintf(stderr, "free address of block = %p\n", b);
+    fprintf(stderr, "free size of block = %ld\n", b->size);
     b->free = 1;
-    if (b->prev && b->prev->free)
-        b = fusion_block(b->prev);
-    if (!b->next)
-        fusion_block(b);
-    else
+    if (b->next != NULL && b->next->free)
+        b = fusion_block(b);
+    if (b->prev != NULL)
+        fusion_block(b->prev);
+    /* else
     {
-        if (b->prev)
-            b->prev->next = NULL;
+        if (b->prev != NULL)
+            b->prev->next = b->next;
+        if (b->next != NULL)
+            b->next->prev = b->prev;
         else
             data.first_block = NULL;
-    }
+    } */
     fprintf(stderr, "free\n");
 }
 
