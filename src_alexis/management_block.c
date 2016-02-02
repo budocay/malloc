@@ -21,9 +21,9 @@ t_block		*fusion_block(t_block *b)
       b->size += SIZE_ALLOC + b->next->size;
       b->next = b->next->next;
       if (b->next)
-	    b->next->prev = b;
+	b->next->prev = b;
     }
-  return b;
+  return (b);
 }
 
 void    split_block(t_block *bl, size_t size)

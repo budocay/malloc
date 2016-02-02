@@ -1,6 +1,12 @@
-//
-// Created by lina_a on 02/02/16.
-//
+/*
+** realloc.c for realloc in
+**
+** Made by lina_a
+** Login   <lina_a@epitech.net>
+**
+** Started on  Tue Feb  2 11:23:35 2016 lina_a
+** Last update Tue Feb  2 11:23:35 2016 lina_a
+*/
 
 #include <malloc.h>
 #include <string.h>
@@ -24,8 +30,6 @@ void    *realloc(void *ptr, size_t size)
         return ptr;
     if ((new_alloc_ptr = malloc(size)) == NULL)
         return (NULL);
-    /* if(!new_alloc_ptr)
-        return NULL; */
     memcpy(new_alloc_ptr, ptr, block_ptr->size);
     free(ptr);
     printf("Realloc\n");
