@@ -5,7 +5,7 @@
 ## Login   <lina_a@epitech.net>
 ## 
 ## Started on  Tue Jan 20 11:10:49 2015 lina_a
-## Last update Tue Feb  2 11:17:58 2016 pirou_g
+## Last update Tue Feb  2 11:38:34 2016 pirou_g
 ##
 
 CC		= gcc
@@ -14,7 +14,7 @@ RM		= rm -f
 
 NAME		= libmy_malloc.so
 
-CFLAGS		= -Wall -Wextra -Werror -fPIC
+CFLAGS		= -Wall -Wextra -Werror -fPIC -g
 CFLAGS		+= -I ./src_alexis/include
 
 LDFLAGS		= -shared

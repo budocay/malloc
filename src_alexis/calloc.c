@@ -14,17 +14,17 @@
 #include <stdio.h>
 #include "./include/malloc.h"
 
-void    *calloc(size_t size1, size_t size2)
+void*     calloc(size_t size1, size_t size2)
 {
-  size_t size;;
-  void    *ptr;
+  size_t  size;
+  void*   ptr;
 
   size = size1 * size2;
   if (size < (size1 * size2))
-    return NULL;
+      return (NULL);
   if ((ptr = malloc(size)) == NULL)
-    return NULL;
+    return (NULL);
   memset(ptr, 0, size);
-  printf("Calloc\n");
-  return ptr;
+  fprintf(stderr, "Calloc\n");
+  return (ptr);
 }
