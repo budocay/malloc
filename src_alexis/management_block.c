@@ -80,9 +80,14 @@ t_block*        find_free_node(size_t size)
     data = get_data();
     if ((current = data->first_block) == NULL)
         return (NULL);
-    while (current != NULL && !current->free && current->size < size)
+    while (current != NULL)
+    {
+        if (current->free && current->size >= size)
+        {
+            current->free = 0;
+            return (current);
+        }
         current = current->next;
-    if (current != NULL)
-        current->free = 0;
-    return (current);
+    }
+    return (NULL);
 }
