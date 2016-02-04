@@ -12,7 +12,8 @@
 #define MALLOC_H_
 
 //#define BLOCK_SIZE  4096
-#define BLOCK_SIZE   1048576
+//#define BLOCK_SIZE   1048576
+#define BLOCK_SIZE  getpagesize()
 #define BIG_IDX     (BLOCK_SIZE / sizeof(void*))
 #define GET_IDX(x)  ((x < (BLOCK_SIZE - sizeof(void*))) ? x / sizeof(void*) : BIG_IDX)
 #define SIZE_ALLOC  sizeof(t_block)
@@ -44,7 +45,7 @@ void*               malloc(size_t t);
 void                free(void * ptr);
 void*               realloc(void * ptr, size_t size);
 t_block*            fusion_block(t_block *b);
-void                split_block(t_block *bl, size_t size);
+void*               split_block(t_block *bl, size_t size);
 void*               calloc(size_t size1, size_t size2);
 t_block*            find_free_node(size_t size);
 t_block*            get_block_ptr(void *ptr);

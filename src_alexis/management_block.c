@@ -31,19 +31,32 @@ t_block*        fusion_block(t_block *b)
     return (b);
 }
 
-void            split_block(t_block *bl, size_t size)
+void*           split_block(t_block *bl, size_t size)
 {
     t_block*    new;
+    void*       ptr;
 
-    new = bl;
-    new->size = (bl->size - size) - SIZE_ALLOC;
+    if (bl == NULL || !bl->free || size > (bl->size - sizeof(t_block)))
+        return (NULL);
+    ptr = bl + sizeof(t_block) + bl->size;
+    ptr -= (size + sizeof(t_block));
+    new = ptr;
+    new->prev = bl;
+    new->next = bl->next;
+    new->size = size;
+    new->free = 0;
+    new->next_size = NULL;
+    bl->next = new;
+    bl->size -= (size + sizeof(t_block));
+    /* new->size = (bl->size - size) - SIZE_ALLOC;
     new->next = bl->next;
     new->prev = bl;
     new->free = 1;
     new->size = size;
     bl->next = new;
     if (new->next)
-        new->next->prev = new;
+        new->next->prev = new; */
+    return (new);
 }
 
 t_block*        get_block_ptr(void *ptr)
