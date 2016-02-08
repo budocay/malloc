@@ -1,6 +1,12 @@
-//
-// Created by lina_a on 02/02/16.
-//
+/*
+** show_alloc_mem.c for show_alloc_mem in
+**
+** Made by lina_a
+** Login   <lina_a@epitech.net>
+**
+** Started on  Thu Feb  4 12:53:57 2016 lina_a
+** Last update Thu Feb  4 12:53:57 2016 lina_a
+*/
 
 #include <stdio.h>
 #include "include/malloc.h"
