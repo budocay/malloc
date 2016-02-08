@@ -97,6 +97,8 @@ t_block*        find_free_node(size_t size)
     {
         if (current->free && current->size >= size)
         {
+            if (current->size >= (size + sizeof(t_block)))
+                return (split_block(current, size));
             current->free = 0;
             return (current);
         }

@@ -63,7 +63,7 @@ void            free(void *ptr)
         b = fusion_block(b);
     if (b->prev != NULL)
         fusion_block(b->prev);
-    free_heap();
+    //free_heap();
     /* else
     {
         if (b->prev != NULL)
