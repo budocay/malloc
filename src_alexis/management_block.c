@@ -36,10 +36,11 @@ void*           split_block(t_block *bl, size_t size)
     t_block*    new;
     void*       ptr;
 
-    if (bl == NULL || !bl->free || size > (bl->size - sizeof(t_block)))
+    if (bl == NULL || !(bl->free) ||
+        ((long)(bl->size - sizeof(t_block))) < (long)size)
         return (NULL);
-    ptr = bl + sizeof(t_block) + bl->size;
-    ptr -= (size + sizeof(t_block));
+    ptr = bl;
+    ptr += (bl->size - size);
     new = ptr;
     new->prev = bl;
     new->next = bl->next;
@@ -48,14 +49,6 @@ void*           split_block(t_block *bl, size_t size)
     new->next_size = NULL;
     bl->next = new;
     bl->size -= (size + sizeof(t_block));
-    /* new->size = (bl->size - size) - SIZE_ALLOC;
-    new->next = bl->next;
-    new->prev = bl;
-    new->free = 1;
-    new->size = size;
-    bl->next = new;
-    if (new->next)
-        new->next->prev = new; */
     return (new);
 }
 
@@ -97,7 +90,7 @@ t_block*        find_free_node(size_t size)
     {
         if (current->free && current->size >= size)
         {
-            if (current->size >= (size + sizeof(t_block)))
+            if (current->size > (size + sizeof(t_block)))
                 return (split_block(current, size));
             current->free = 0;
             return (current);

@@ -75,7 +75,10 @@ void*           malloc(size_t t)
     size = align4(t);
     if (data.first_block != NULL &&
         (bl = find_free_node(size)) != NULL)
+    {
+        split_block(bl, size);
         return (bl + 1);
+    }
     else if (data.mem_left >= (size + sizeof(t_block)))
     {
         if ((bl = create_block_with_mem_left(size)) == NULL)
