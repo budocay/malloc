@@ -12,7 +12,6 @@
 #define MALLOC_H_
 
 #define BLOCK_SIZE  getpagesize()
-#define BIG_IDX     (BLOCK_SIZE / sizeof(void*))
 #define SIZE_ALLOC  sizeof(t_block)
 #define align4(x)   (((((x)-1)>>2)<<2)+4)
 
@@ -51,5 +50,6 @@ void                show_mem(void);
 t_alloc*            get_data(void);
 t_block*            create_block_with_mem_left(size_t size);
 int                 init_heap_data(void);
+size_t              get_p2_idx(size_t n);
 
 #endif /* MALLOC_H_! */

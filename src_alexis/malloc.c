@@ -57,7 +57,7 @@ int             init_heap_data(void)
 t_block*        expand_and_create_block(size_t size)
 {
     if (((data.start_heap == NULL || data.brk == NULL) &&
-         init_heap_data()) < 0 || sbrk(BLOCK_SIZE + size) == (void*)-1)
+         init_heap_data()) < 0 || brk(data.brk + BLOCK_SIZE + size) < 0)
         return (NULL);
     data.mem_left += BLOCK_SIZE + size;
     data.brk += BLOCK_SIZE + size;

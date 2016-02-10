@@ -49,6 +49,22 @@ void            free_heap(void)
     brk(data->brk);
 }
 
+size_t          get_p2_idx(size_t n)
+{
+    size_t      mask;
+    int         i;
+
+    mask = 0b1000000000000000000000000000000000000000000000000000000000000000;
+    i = 64;
+    while (--i >= 0)
+    {
+        if (n & mask)
+            return ((size_t)i);
+        mask = mask >> 1;
+    }
+    return (0);
+}
+
 void            free(void *ptr)
 {
     t_block*    b;
