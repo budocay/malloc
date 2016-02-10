@@ -11,10 +11,9 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <string.h>
-#include <stdio.h>
 #include "include/malloc.h"
 
-static t_alloc  data = {NULL, NULL, NULL, NULL, 0/*, {NULL}*/};
+static t_alloc  data = {NULL, NULL, NULL, NULL, 0, {NULL}};
 
 t_alloc*        get_data(void)
 {

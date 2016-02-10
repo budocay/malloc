@@ -63,14 +63,4 @@ void            free(void *ptr)
         b = fusion_block(b);
     if (b->prev != NULL)
         fusion_block(b->prev);
-    //free_heap();
-    /* else
-    {
-        if (b->prev != NULL)
-            b->prev->next = b->next;
-        if (b->next != NULL)
-            b->next->prev = b->prev;
-        else
-            data->first_block = NULL;
-    } */
 }
