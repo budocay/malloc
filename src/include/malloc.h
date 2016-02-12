@@ -12,8 +12,6 @@
 # define MALLOC_H_
 
 #define BLOCK_SIZE 1048576
-#define BIG_IDX (BLOCK_SIZE / sizeof(void*))
-#define GET_IDX(x) ((x < (BLOCK_SIZE - sizeof(void*))) ? x / sizeof(void*) : BIG_IDX)
 #define SIZE_ALLOC sizeof(t_block)
 #define align4(x)   (((((x)-1)>>2)<<2)+4)
 
