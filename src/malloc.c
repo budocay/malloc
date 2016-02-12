@@ -44,22 +44,6 @@ t_block*        expand_and_create_block(size_t size)
     return (create_block_with_mem_left(size));
 }
 
-t_block*        create_page_size_bloc()
-{
-    t_alloc*    data;
-    size_t      page_size;
-    void*       ptr_brk;
-
-    data = get_data();
-    page_size = data->page_size;
-    ptr_brk = data->brk + page_size + sizeof(t_block);
-    if (brk(ptr_brk) < 0)
-        return (NULL);
-    data->brk = ptr_brk;
-    data->mem_left += page_size + sizeof(t_block);
-    return create_block_with_mem_left(page_size);
-}
-
 void*           malloc(size_t t)
 {
     t_block*    bl;
@@ -75,24 +59,8 @@ void*           malloc(size_t t)
         insert_block(bl);
         return (bl + 1);
     }
-    else if (data.first_block != NULL &&
-	     (bl = find_free_node(size)) != NULL)
-    {
-        if (bl->size > (size + sizeof(t_block)))
-	    {
-            if ((bl = split_block(bl, size)) == NULL)
-	          return (NULL);
-            insert_block(bl);
-	    }
-        return (bl + 1);
-    }
-    else if (t == data.page_size)
-    {
-        if ((bl = create_page_size_bloc()) == NULL)
-	      return (NULL);
-        insert_block(bl);
-        return (bl + 1);
-    }
+    else if ((bl = test_optimize_malloc(size)) != NULL)
+        return (bl);
     if ((bl = expand_and_create_block(size)) == NULL)
       return (NULL);
     insert_block(bl);

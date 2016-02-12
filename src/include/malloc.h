@@ -51,6 +51,7 @@ void                show_mem(void);
 t_alloc*            get_data(void);
 t_block*            create_block_with_mem_left(size_t size);
 int                 init_heap_data(void);
-void		    insert_block(t_block *bl);
+void		        insert_block(t_block *bl);
+void*               test_optimize_malloc(size_t size);
 
 #endif /* MALLOC_H_! */

@@ -25,7 +25,8 @@ SRCS		= ./src/malloc.c \
 	  	  ./src/free.c \
 		  ./src/realloc.c \
 		  ./src/show_alloc_mem.c \
-		  ./src/insert_blk.c
+		  ./src/insert_blk.c \
+		  ./src/optimize_malloc.c
 
 OBJS		= $(SRCS:.c=.o)
 
