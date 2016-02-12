@@ -57,27 +57,6 @@ t_block*        get_block_ptr(void *ptr)
     return ((ptr != NULL) ? (t_block*)ptr - 1 : NULL);
 }
 
-t_block*        create_block_with_mem_left(size_t size)
-{
-    size_t      length;
-    t_block*    bl;
-    t_alloc*    data;
-
-    length = size + sizeof(t_block);
-    data = get_data();
-    if ((data->start_heap == NULL || data->brk == NULL) &&
-        init_heap_data() < 0)
-        return (NULL);
-    if (data->mem_left < length)
-        return (NULL);
-    bl = data->brk - data->mem_left;
-    bl->next_size = NULL;
-    bl->size = size;
-    bl->free = 0;
-    data->mem_left -= length;
-    return (bl);
-}
-
 t_block*        extract_free_node(t_block* block)
 {
     t_alloc*    data;

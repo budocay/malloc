@@ -19,12 +19,13 @@ CFLAGS		+= -I ./src_alexis/include
 
 LDFLAGS		= -shared
 
-SRCS		= ./src_alexis/malloc.c \
-	  	  ./src_alexis/management_block.c \
-	  	  ./src_alexis/calloc.c \
-	  	  ./src_alexis/free.c \
-		  ./src_alexis/realloc.c \
-		  ./src_alexis/show_alloc_mem.c
+SRCS		= ./src/malloc.c \
+	  	  ./src/management_block.c \
+	  	  ./src/calloc.c \
+	  	  ./src/free.c \
+		  ./src/realloc.c \
+		  ./src/show_alloc_mem.c \
+		  ./src/insert_blk.c
 
 OBJS		= $(SRCS:.c=.o)
 

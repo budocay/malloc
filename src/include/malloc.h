@@ -11,11 +11,10 @@
 #ifndef MALLOC_H_
 # define MALLOC_H_
 
-//#define BLOCK_SIZE  4096
-#define BLOCK_SIZE   1048576
-#define BIG_IDX     (BLOCK_SIZE / sizeof(void*))
-#define GET_IDX(x)  ((x < (BLOCK_SIZE - sizeof(void*))) ? x / sizeof(void*) : BIG_IDX)
-#define SIZE_ALLOC  sizeof(t_block)
+#define BLOCK_SIZE 1048576
+#define BIG_IDX (BLOCK_SIZE / sizeof(void*))
+#define GET_IDX(x) ((x < (BLOCK_SIZE - sizeof(void*))) ? x / sizeof(void*) : BIG_IDX)
+#define SIZE_ALLOC sizeof(t_block)
 #define align4(x)   (((((x)-1)>>2)<<2)+4)
 
 #include <stddef.h>
@@ -54,5 +53,6 @@ void                show_mem(void);
 t_alloc*            get_data(void);
 t_block*            create_block_with_mem_left(size_t size);
 int                 init_heap_data(void);
+void		    insert_block(t_block *bl);
 
 #endif /* MALLOC_H_! */

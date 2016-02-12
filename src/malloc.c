@@ -21,24 +21,6 @@ t_alloc*        get_data(void)
     return (&data);
 }
 
-void            insert_block(t_block *bl)
-{
-    if (bl == NULL)
-        return;
-    if (data.first_block == NULL)
-    {
-        data.first_block = bl;
-        data.last_block = bl;
-        bl->next = NULL;
-        bl->prev = NULL;
-        return;
-    }
-    bl->next = NULL;
-    bl->prev = data.last_block;
-    data.last_block->next = bl;
-    data.last_block = bl;
-}
-
 int             init_heap_data(void)
 {
     size_t      padding;
@@ -87,34 +69,34 @@ void*           malloc(size_t t)
 
     size = align4(t);
     if (data.page_size == 0 && init_heap_data() < 0)
-        return (NULL);
+      return (NULL);
     if (data.mem_left >= (size + sizeof(t_block)))
-    {
-        if ((bl = create_block_with_mem_left(size)) == NULL)
-            return (NULL);
+      {
+	if ((bl = create_block_with_mem_left(size)) == NULL)
+	  return (NULL);
         insert_block(bl);
         return (bl + 1);
-    }
+      }
     else if (data.first_block != NULL &&
-        (bl = find_free_node(size)) != NULL)
-    {
+	     (bl = find_free_node(size)) != NULL)
+      {
         if (bl->size > (size + sizeof(t_block)))
-        {
+	  {
             if ((bl = split_block(bl, size)) == NULL)
-                return (NULL);
+	      return (NULL);
             insert_block(bl);
-        }
+	  }
         return (bl + 1);
     }
     else if (t == data.page_size)
-    {
+      {
         if ((bl = create_page_size_bloc()) == NULL)
-            return (NULL);
+	  return (NULL);
         insert_block(bl);
         return (bl + 1);
-    }
+      }
     if ((bl = expand_and_create_block(size)) == NULL)
-        return (NULL);
+      return (NULL);
     insert_block(bl);
     return (bl + 1);
 }
