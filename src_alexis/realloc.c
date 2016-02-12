@@ -26,7 +26,7 @@ void*           realloc(void *ptr, size_t size)
         return (NULL);
     }
     block_ptr = get_block_ptr(ptr);
-    if(block_ptr->size >= size)
+    if (block_ptr->size >= size)
         return ptr;
     if ((new_alloc_ptr = malloc(size)) == NULL)
         return (NULL);

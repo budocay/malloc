@@ -9,7 +9,7 @@
 */
 
 #ifndef MALLOC_H_
-#define MALLOC_H_
+# define MALLOC_H_
 
 //#define BLOCK_SIZE  4096
 #define BLOCK_SIZE   1048576

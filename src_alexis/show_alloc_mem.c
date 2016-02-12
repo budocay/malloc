@@ -38,7 +38,8 @@ void            show_mem(void)
     printf("break : %p\n", data->brk);
     while (bl != NULL)
     {
-        printf("%p - %p : %lu bytes\nfree : %d\n", bl, (void*)bl + bl->size + sizeof(t_block), bl->size, bl->free);
+        printf("%p - %p : %lu bytes\nfree : %d\n", bl, (void*)bl + bl->size
+	       + sizeof(t_block), bl->size, bl->free);
         bl = bl->next;
     }
 }

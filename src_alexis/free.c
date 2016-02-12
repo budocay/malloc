@@ -1,7 +1,12 @@
-//
-// Created by lina_a on 02/02/16.
-//
-
+/*
+** free.c for free in
+**
+** Made by lina_a
+** Login   <lina_a@epitech.net>
+**
+** Started on  Fri Feb 12 11:27:25 2016 lina_a
+** Last update Fri Feb 12 11:27:25 2016 lina_a
+*/
 
 #include <stddef.h>
 #include <unistd.h>
