@@ -73,8 +73,10 @@ void            free(void *ptr)
     data = get_data();
     if (ptr == NULL || ptr < data->start_heap || ptr > data->brk)
         return;
-    b = get_block_ptr(ptr);
+    b = ptr - sizeof(t_block);
     b->free = 1;
+    b->next_size = data->free_blocks;
+    data->free_blocks = b;
     if (b->next != NULL && b->next->free)
         b = fusion_block(b);
     if (b->prev != NULL)

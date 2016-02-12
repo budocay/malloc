@@ -11,9 +11,10 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdio.h>
 #include "include/malloc.h"
 
-static t_alloc  data = {NULL, NULL, NULL, NULL, 0, {NULL}};
+static t_alloc  data = {NULL, NULL, NULL, NULL, NULL, 0, 0};
 
 t_alloc*        get_data(void)
 {
@@ -50,18 +51,33 @@ int             init_heap_data(void)
     data.start_heap += padding;
     data.brk = data.start_heap;
     data.mem_left = 0;
+    data.page_size = (size_t)getpagesize();
     return (0);
 }
 
-
 t_block*        expand_and_create_block(size_t size)
 {
-    if (((data.start_heap == NULL || data.brk == NULL) &&
-         init_heap_data()) < 0 || brk(data.brk + BLOCK_SIZE + size) < 0)
+    if (brk(data.brk + BLOCK_SIZE + size) < 0)
         return (NULL);
     data.mem_left += BLOCK_SIZE + size;
     data.brk += BLOCK_SIZE + size;
     return (create_block_with_mem_left(size));
+}
+
+t_block*        create_page_size_bloc()
+{
+    t_alloc*    data;
+    size_t      page_size;
+    void*       ptr_brk;
+
+    data = get_data();
+    page_size = data->page_size;
+    ptr_brk = data->brk + page_size + sizeof(t_block);
+    if (brk(ptr_brk) < 0)
+        return (NULL);
+    data->brk = ptr_brk;
+    data->mem_left += page_size + sizeof(t_block);
+    return create_block_with_mem_left(page_size);
 }
 
 void*           malloc(size_t t)
@@ -69,18 +85,30 @@ void*           malloc(size_t t)
     t_block*    bl;
     size_t      size;
 
-    if (!t)
-        return (NULL);
     size = align4(t);
-    if (data.first_block != NULL &&
-        (bl = find_free_node(size)) != NULL)
-    {
-        split_block(bl, size);
-        return (bl + 1);
-    }
-    else if (data.mem_left >= (size + sizeof(t_block)))
+    if (data.page_size == 0 && init_heap_data() < 0)
+        return (NULL);
+    if (data.mem_left >= (size + sizeof(t_block)))
     {
         if ((bl = create_block_with_mem_left(size)) == NULL)
+            return (NULL);
+        insert_block(bl);
+        return (bl + 1);
+    }
+    else if (data.first_block != NULL &&
+        (bl = find_free_node(size)) != NULL)
+    {
+        if (bl->size > (size + sizeof(t_block)))
+        {
+            if ((bl = split_block(bl, size)) == NULL)
+                return (NULL);
+            insert_block(bl);
+        }
+        return (bl + 1);
+    }
+    else if (t == data.page_size)
+    {
+        if ((bl = create_page_size_bloc()) == NULL)
             return (NULL);
         insert_block(bl);
         return (bl + 1);

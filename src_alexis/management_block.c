@@ -31,7 +31,7 @@ t_block*        fusion_block(t_block *b)
     return (b);
 }
 
-void*           split_block(t_block *bl, size_t size)
+t_block*        split_block(t_block *bl, size_t size)
 {
     t_block*    new;
     void*       ptr;
@@ -78,23 +78,33 @@ t_block*        create_block_with_mem_left(size_t size)
     return (bl);
 }
 
+t_block*        extract_free_node(t_block* block)
+{
+    t_alloc*    data;
+
+    if (block == NULL)
+        return (NULL);
+    data = get_data();
+    block->free = 0;
+    data->free_blocks = block->next_size;
+    block->next_size = NULL;
+    return (block);
+}
+
 t_block*        find_free_node(size_t size)
 {
     t_block*    current;
     t_alloc*    data;
 
     data = get_data();
-    if ((current = data->first_block) == NULL)
+    if ((current = data->free_blocks) == NULL)
         return (NULL);
-    while (current != NULL)
+    if (current->size >= size)
+        return (extract_free_node(current));
+    while (current->next_size != NULL)
     {
-        if (current->free && current->size >= size)
-        {
-            if (current->size > (size + sizeof(t_block)))
-                return (split_block(current, size));
-            current->free = 0;
-            return (current);
-        }
+        if (current->next_size->size >= size)
+            return (extract_free_node(current->next_size));
         current = current->next;
     }
     return (NULL);
