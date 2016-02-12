@@ -9,9 +9,8 @@
 */
 
 #include <unistd.h>
-#include <stdio.h>
 #include <string.h>
-#include "include/malloc.h"
+#include "malloc.h"
 
 t_block*        fusion_block(t_block *b)
 {

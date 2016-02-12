@@ -15,7 +15,7 @@ RM		= rm -f
 NAME		= libmy_malloc.so
 
 CFLAGS		= -Wall -Wextra -Werror -fPIC
-CFLAGS		+= -I ./src_alexis/include
+CFLAGS		+= -I ./src/include
 
 LDFLAGS		= -shared
 

@@ -10,8 +10,7 @@
 
 #include <malloc.h>
 #include <string.h>
-#include <stdio.h>
-#include "include/malloc.h"
+#include "malloc.h"
 
 void*           realloc(void *ptr, size_t size)
 {

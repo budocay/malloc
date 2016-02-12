@@ -10,7 +10,7 @@
 
 #include <stddef.h>
 #include <unistd.h>
-#include "include/malloc.h"
+#include "malloc.h"
 
 void            reset_heap(void)
 {
@@ -37,7 +37,8 @@ void            free_heap(void)
         return;
     while (csr->prev != NULL && csr->prev->free)
         csr = csr->prev;
-    if (csr == data->first_block) {
+    if (csr == data->first_block)
+    {
         reset_heap();
         return;
     }

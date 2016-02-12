@@ -9,7 +9,7 @@
 */
 
 #include <stdio.h>
-#include "include/malloc.h"
+#include "malloc.h"
 
 void            show_alloc_mem(void)
 {
