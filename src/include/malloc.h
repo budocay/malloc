@@ -54,4 +54,4 @@ int                 init_heap_data(void);
 void		        insert_block(t_block *bl);
 void*               test_optimize_malloc(size_t size);
 
-#endif /* MALLOC_H_! */
+#endif /* MALLOC_H_ */

@@ -1,6 +1,12 @@
-//
-// Created by pirou_g on 12/02/16.
-//
+/*
+** malloc.c for malloc in /home/pirou_g/ClionProjects/PSU_2015_malloc/src
+**
+** Made by pirou_g
+** Login   <pirou_g@epitech.net>
+**
+** Started on  Mon Feb  13 08:43:32 2016 pirou_g
+** Last update Mon Feb  13 08:43:32 2016 pirou_g
+*/
 
 #include <stdlib.h>
 #include <unistd.h>
